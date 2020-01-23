@@ -22,24 +22,22 @@ def getData ():
     else:
       return '아디다스 레트로 2XL 입고 아직 안됨...'
 
-def setTelegramBot ():
-  updater = Updater(
-      token='629033245:AAEc2De6EjxzsucAbV6OHasoMfZ2QVnLejo', use_context=True)
-  dispatcher = updater.dispatcher
-  start_handler = CommandHandler('start', sendMessage)
-  dispatcher.add_handler(start_handler)
-  updater.start_polling()
 
-  echo_handler = MessageHandler(Filters.text, echo)
-  dispatcher.add_handler(echo_handler)
+def sayhi(bot, job):
+    job.context.message.reply_text(getData())
 
-def sendMessage (update, context):
-  context.bot.send_message(
-      chat_id=update.effective_chat.id, text=getData())
 
-def echo(update, context):
-    context.bot.send_message(
-        chat_id=update.effective_chat.id, text=update.message.text)
+def time(bot, update, job_queue):
+    job = job_queue.run_repeating(sayhi, 600, context=update)
+
+
+def main():
+    updater = Updater('629033245:AAEc2De6EjxzsucAbV6OHasoMfZ2QVnLejo')
+    dp = updater.dispatcher
+    dp.add_handler(MessageHandler(Filters.text, time, pass_job_queue=True))
+
+    updater.start_polling()
+    updater.idle()
 
 if __name__ == '__main__':
-  setTelegramBot()
+  main()
